@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>init.pp</title>
+  <link rel="stylesheet" href="http://jashkenas.github.com/docco/resources/docco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <table cellspacing=0 cellpadding=0>
+  <thead>
+    <tr>
+      <th class=docs><h1>init.pp</h1></th>
+      <th class=code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-Class:_pocco'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Class:_pocco">&#182;</a>
+        </div>
+        <h3>Class: pocco</h3>
+
+<p><strong>Pocco</strong> is derived from <a href="http://rtomayko.github.com/rocco/">Rocco</a>, the
+literate-programming-style documentation generator.</p>
+
+<p>Pocco reads Puppet manifests from puppet modules and produces annotated
+source documentation in HTML format in the module docs directory.</p>
+
+<p>WARNING: install pygments to process highlighting locally, otherwise the
+manifests are uploaded to
+<a href="http://pygments.appspot.com">http://pygments.appspot.com</a> for processing.</p>
+
+<p>Pocco has some puppet specific functionality:</p>
+
+<ul>
+<li>generate a header for class/define.</li>
+<li>parse class/define parameter for defaults and comments.</li>
+<li>import the corresponding manifests from the test directory as usage
+example.</li>
+</ul>
+
+
+<h3>Parameters:</h3>
+
+<ul>
+<li>[<em>rocco_package</em>]:  rocco package installation (default: present)</li>
+<li>[<em>rocco_provider</em>]:  rocco package provider gem (default: gem)</li>
+<li>[<em>install_path</em>]:  pocco installation path (default: &lsquo;/opt/pocco&rsquo;)</li>
+</ul>
+
+
+<h3>Usage:</h3>
+
+<pre><code>class { 'pocco':
+  rocco_provider =&gt; 'pe_gem',
+}
+</code></pre>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="k">class</span> <span class="n">pocco</span> <span class="p">(</span>
+  <span class="vg">$rocco_package</span>  <span class="o">=</span> <span class="n">present</span><span class="p">,</span>     
+  <span class="vg">$rocco_provider</span> <span class="o">=</span> <span class="n">gem</span><span class="p">,</span>         
+  <span class="vg">$install_path</span>   <span class="o">=</span> <span class="s1">&#39;/opt/pocco&#39;</span> 
+<span class="p">)</span> <span class="p">{</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-2">&#182;</a>
+        </div>
+        <p>Pocco depends on rocco for the documentation parsing and highlighting.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">package</span> <span class="p">{</span> <span class="s1">&#39;rocco&#39;</span><span class="p">:</span>
+    <span class="k">ensure</span>   <span class="o">=&gt;</span> <span class="vg">$rocco_package</span><span class="p">,</span>
+    <span class="n">provider</span> <span class="o">=&gt;</span> <span class="vg">$roccor_provider</span><span class="p">,</span>
+  <span class="p">}</span>
+
+  <span class="n">vcsrepo</span> <span class="p">{</span> <span class="s1">&#39;/opt/pocco&#39;</span><span class="p">:</span>
+    <span class="k">ensure</span> <span class="o">=&gt;</span> <span class="s1">&#39;latest&#39;</span><span class="p">,</span>
+    <span class="n">source</span> <span class="o">=&gt;</span> <span class="s1">&#39;git@github.com:nanliu/pocco.git&#39;</span><span class="p">,</span>
+  <span class="p">}</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-3">&#182;</a>
+        </div>
+        <p>The exec command demonstrates pocco generating documentation.</p>
+
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="nb">exec</span> <span class="p">{</span> <span class="s1">&#39;update_pocco_docs&#39;</span><span class="p">:</span>
+    <span class="n">command</span>     <span class="o">=&gt;</span> <span class="s1">&#39;/opt/pocco/bin/pocco /opt/pocco&#39;</span><span class="p">,</span>
+    <span class="n">environment</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;RUBYOPT=rubygems&#39;</span><span class="p">,</span> <span class="s1">&#39;RUBYLIB=/opt/pocco/lib&#39;</span><span class="o">]</span><span class="p">,</span>
+    <span class="n">refreshonly</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>
+    <span class="n">subscribe</span>   <span class="o">=&gt;</span> <span class="no">Vcsrepo</span><span class="o">[</span><span class="s1">&#39;/opt/pocco&#39;</span><span class="o">]</span><span class="p">,</span>
+  <span class="p">}</span>
+<span class="p">}</span></pre></div>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>
