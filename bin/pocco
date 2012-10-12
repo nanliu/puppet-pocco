@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+#/ Usage: pocco [module_path]
+#/ Generate literate-programming-style documentation for Puppet manifests.
+#/
+#/ Options:
+#/       --help             Show this help message
+
+require 'optparse'
+require 'fileutils'
+require 'pocco'
+
+# Write usage message to stdout and exit.
+def usage(stream=$stderr, status=1)
+  stream.puts File.readlines(__FILE__).
+    grep(/^#\//).
+    map { |line| line.sub(/^#. ?/, '') }.
+    join
+  exit status
+end
+
+# Parse command line options, aborting if anything goes wrong.
+module_path = []
+options = {}
+ARGV.options { |o|
+  o.program_name = File.basename($0)
+  o.on_tail("-h", "--help") { usage($stdout, 0) }
+  o.parse!
+} or abort_with_note
+
+# Eat sources from ARGV.
+module_path << ARGV.shift while ARGV.any?
+
+# Make sure we have some files to work with.
+if module_path.empty?
+  abort_with_note "#{File.basename($0)}: no input <module_path>s given"
+end
+
+# Run each module through Pocco and write output.
+module_path.each do |path|
+  raise Error, "module path must be a directory: #{path}" unless File.directory? path
+  pocco = Pocco.new(path, options)
+  pocco.generate
+end
