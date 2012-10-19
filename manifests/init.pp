@@ -16,15 +16,15 @@
 # example.
 #
 class pocco (
-  $rocco_package  = present,     #: rocco package installation
-  $rocco_provider = gem,         #: rocco package provider gem
-  $install_path   = '/opt/pocco' #: pocco installation path
+  $ensure       = present,     #: rocco package installation
+  $provider     = gem,         #: rocco package provider gem
+  $install_path = '/opt/pocco' #: pocco installation path
 ) {
 
   # Pocco depends on rocco for the documentation parsing and highlighting.
   package { 'rocco':
-    ensure   => $rocco_package,
-    provider => $roccor_provider,
+    ensure   => $ensure,
+    provider => $provider,
   }
 
   vcsrepo { '/opt/pocco':

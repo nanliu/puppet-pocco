@@ -59,7 +59,7 @@ class Rocco
       line =~ /^\s*\$(\S+)\s*[=]?\s*(\S+)?\s*/
 
       { :name    => $1.chomp(','),
-        :default => $2.chomp(','),
+        :default => ($2 || '').chomp(','),
         :comment => comment,
         :line    => line,
       }
