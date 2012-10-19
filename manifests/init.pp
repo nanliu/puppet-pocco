@@ -39,7 +39,7 @@ class pocco (
   package { 'rocco':
     ensure   => $ensure,
     provider => $provider,
-  }
+  } ->
 
   vcsrepo { '/opt/pocco':
     ensure   => latest,
