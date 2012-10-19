@@ -46,8 +46,8 @@ example.</li>
 <h3>Parameters:</h3>
 
 <ul>
-<li>[<em>rocco_package</em>]:  rocco package installation (default: present)</li>
-<li>[<em>rocco_provider</em>]:  rocco package provider gem (default: gem)</li>
+<li>[<em>ensure</em>]:  rocco package installation (default: present)</li>
+<li>[<em>provider</em>]:  rocco package provider gem (default: gem)</li>
 <li>[<em>install_path</em>]:  pocco installation path (default: &lsquo;/opt/pocco&rsquo;)</li>
 </ul>
 
@@ -55,15 +55,15 @@ example.</li>
 <h3>Usage:</h3>
 
 <pre><code>class { 'pocco':
-  rocco_provider =&gt; 'pe_gem',
+  provider =&gt; 'gem',
 }
 </code></pre>
       </td>
       <td class=code>
         <div class='highlight'><pre><span class="k">class</span> <span class="n">pocco</span> <span class="p">(</span>
-  <span class="vg">$rocco_package</span>  <span class="o">=</span> <span class="n">present</span><span class="p">,</span>     
-  <span class="vg">$rocco_provider</span> <span class="o">=</span> <span class="n">gem</span><span class="p">,</span>         
-  <span class="vg">$install_path</span>   <span class="o">=</span> <span class="s1">&#39;/opt/pocco&#39;</span> 
+  <span class="vg">$ensure</span>       <span class="o">=</span> <span class="n">present</span><span class="p">,</span>     
+  <span class="vg">$provider</span>     <span class="o">=</span> <span class="n">gem</span><span class="p">,</span>         
+  <span class="vg">$install_path</span> <span class="o">=</span> <span class="s1">&#39;/opt/pocco&#39;</span> 
 <span class="p">)</span> <span class="p">{</span></pre></div>
       </td>
     </tr>
@@ -72,24 +72,49 @@ example.</li>
         <div class="pilwrap">
           <a class="pilcrow" href="#section-2">&#182;</a>
         </div>
-        <p>Pocco depends on rocco for the documentation parsing and highlighting.</p>
+        <p>There&rsquo;s only one line requiring rake so might refactor away this requirement later.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>  <span class="n">package</span> <span class="p">{</span> <span class="s1">&#39;rocco&#39;</span><span class="p">:</span>
-    <span class="k">ensure</span>   <span class="o">=&gt;</span> <span class="vg">$rocco_package</span><span class="p">,</span>
-    <span class="n">provider</span> <span class="o">=&gt;</span> <span class="vg">$roccor_provider</span><span class="p">,</span>
-  <span class="p">}</span>
-
-  <span class="n">vcsrepo</span> <span class="p">{</span> <span class="s1">&#39;/opt/pocco&#39;</span><span class="p">:</span>
-    <span class="k">ensure</span> <span class="o">=&gt;</span> <span class="s1">&#39;latest&#39;</span><span class="p">,</span>
-    <span class="n">source</span> <span class="o">=&gt;</span> <span class="s1">&#39;git@github.com:nanliu/pocco.git&#39;</span><span class="p">,</span>
-  <span class="p">}</span></pre></div>
+        <div class='highlight'><pre>  <span class="n">package</span> <span class="p">{</span> <span class="s1">&#39;rake&#39;</span><span class="p">:</span>
+    <span class="k">ensure</span>   <span class="o">=&gt;</span> <span class="vg">$ensure</span><span class="p">,</span>
+    <span class="n">provider</span> <span class="o">=&gt;</span> <span class="vg">$provider</span><span class="p">,</span>
+  <span class="p">}</span> <span class="o">-&gt;</span></pre></div>
       </td>
     </tr>
     <tr id='section-3'>
       <td class=docs>
         <div class="pilwrap">
           <a class="pilcrow" href="#section-3">&#182;</a>
+        </div>
+        <p>Pocco depends on rocco for the documentation parsing and highlighting.</p>
+
+<ul>
+<li>redcarpet 2.2.1 is broken on Ubuntu 12.04: <a href="https://github.com/vmg/redcarpet/pull/166">#166</a>.</li>
+<li>redcarpet 2.2.0 triggers a bug in rocco: <a href="https://github.com/rtomayko/rocco/issues/69">#69</a></li>
+</ul>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">package</span> <span class="p">{</span> <span class="s1">&#39;fl-rocco&#39;</span><span class="p">:</span>
+    <span class="k">ensure</span>   <span class="o">=&gt;</span> <span class="vg">$ensure</span><span class="p">,</span>
+    <span class="n">provider</span> <span class="o">=&gt;</span> <span class="vg">$provider</span><span class="p">,</span>
+  <span class="p">}</span> <span class="o">-&gt;</span>
+
+  <span class="n">package</span> <span class="p">{</span> <span class="s1">&#39;rocco&#39;</span><span class="p">:</span>
+    <span class="k">ensure</span>   <span class="o">=&gt;</span> <span class="vg">$ensure</span><span class="p">,</span>
+    <span class="n">provider</span> <span class="o">=&gt;</span> <span class="vg">$provider</span><span class="p">,</span>
+  <span class="p">}</span> <span class="o">-&gt;</span>
+
+  <span class="n">vcsrepo</span> <span class="p">{</span> <span class="s1">&#39;/opt/pocco&#39;</span><span class="p">:</span>
+    <span class="k">ensure</span>   <span class="o">=&gt;</span> <span class="n">latest</span><span class="p">,</span>
+    <span class="n">source</span>   <span class="o">=&gt;</span> <span class="s1">&#39;https://github.com/nanliu/puppet-pocco.git&#39;</span><span class="p">,</span>
+    <span class="n">provider</span> <span class="o">=&gt;</span> <span class="s1">&#39;git&#39;</span><span class="p">,</span>
+  <span class="p">}</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-4">&#182;</a>
         </div>
         <p>The exec command demonstrates pocco generating documentation.</p>
 
@@ -98,6 +123,7 @@ example.</li>
         <div class='highlight'><pre>  <span class="nb">exec</span> <span class="p">{</span> <span class="s1">&#39;update_pocco_docs&#39;</span><span class="p">:</span>
     <span class="n">command</span>     <span class="o">=&gt;</span> <span class="s1">&#39;/opt/pocco/bin/pocco /opt/pocco&#39;</span><span class="p">,</span>
     <span class="n">environment</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;RUBYOPT=rubygems&#39;</span><span class="p">,</span> <span class="s1">&#39;RUBYLIB=/opt/pocco/lib&#39;</span><span class="o">]</span><span class="p">,</span>
+    <span class="n">logoutput</span>   <span class="o">=&gt;</span> <span class="n">on_failure</span><span class="p">,</span>
     <span class="n">refreshonly</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>
     <span class="n">subscribe</span>   <span class="o">=&gt;</span> <span class="no">Vcsrepo</span><span class="o">[</span><span class="s1">&#39;/opt/pocco&#39;</span><span class="o">]</span><span class="p">,</span>
   <span class="p">}</span>
