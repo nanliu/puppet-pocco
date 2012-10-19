@@ -45,7 +45,7 @@ class pocco (
     ensure   => latest,
     source   => 'https://github.com/nanliu/puppet-pocco.git',
     provider => 'git',
-  }
+  } ~>
 
   # The exec command demonstrates pocco generating documentation.
   exec { 'update_pocco_docs':
