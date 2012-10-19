@@ -21,21 +21,37 @@ class pocco (
   $install_path = '/opt/pocco' #: pocco installation path
 ) {
 
+  # There's only one line requiring rake so might refactor away this requirement later.
+  package { 'rake':
+    ensure   => $ensure,
+    provider => $provider,
+  } ->
+
   # Pocco depends on rocco for the documentation parsing and highlighting.
+  #
+  # * redcarpet 2.2.1 is broken on Ubuntu 12.04: [#166](https://github.com/vmg/redcarpet/pull/166).
+  # * redcarpet 2.2.0 triggers a bug in rocco: [#69](https://github.com/rtomayko/rocco/issues/69)
+  package { 'fl-rocco':
+    ensure   => $ensure,
+    provider => $provider,
+  } ->
+
   package { 'rocco':
     ensure   => $ensure,
     provider => $provider,
   }
 
   vcsrepo { '/opt/pocco':
-    ensure => 'latest',
-    source => 'git@github.com:nanliu/pocco.git',
+    ensure   => latest,
+    source   => 'https://github.com/nanliu/puppet-pocco.git',
+    provider => 'git',
   }
 
   # The exec command demonstrates pocco generating documentation.
   exec { 'update_pocco_docs':
     command     => '/opt/pocco/bin/pocco /opt/pocco',
     environment => ['RUBYOPT=rubygems', 'RUBYLIB=/opt/pocco/lib'],
+    logoutput   => on_failure,
     refreshonly => true,
     subscribe   => Vcsrepo['/opt/pocco'],
   }

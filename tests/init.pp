@@ -1,3 +1,3 @@
 class { 'pocco':
-  provider => 'pe_gem',
+  provider => 'gem',
 }

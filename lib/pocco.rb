@@ -1,6 +1,5 @@
 require 'rake'
 require 'rocco'
-require 'ruby-debug'
 
 # Reopen rocco and put in some Puppet specific hacks.
 class Rocco
